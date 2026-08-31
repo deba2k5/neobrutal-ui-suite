@@ -11,24 +11,24 @@ import { useEffect, type ReactNode } from "react";
 
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
+import { AuthProvider } from "@/lib/auth";
+import { Toaster } from "sonner";
 
 function NotFoundComponent() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-background px-4">
-      <div className="max-w-md text-center">
-        <h1 className="text-7xl font-bold text-foreground">404</h1>
-        <h2 className="mt-4 text-xl font-semibold text-foreground">Page not found</h2>
-        <p className="mt-2 text-sm text-muted-foreground">
-          The page you're looking for doesn't exist or has been moved.
+      <div className="nb-border nb-shadow-lg max-w-md bg-card p-8 text-center">
+        <p className="font-mono text-xs font-bold uppercase">Error 404</p>
+        <h1 className="mt-2 text-4xl">Route not in the network</h1>
+        <p className="mt-3 text-sm text-muted-foreground">
+          This node doesn't exist or your role can't reach it.
         </p>
-        <div className="mt-6">
-          <Link
-            to="/"
-            className="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
-          >
-            Go home
-          </Link>
-        </div>
+        <Link
+          to="/"
+          className="nb-border nb-shadow-sm nb-press mt-6 inline-flex bg-primary px-5 py-2.5 font-display text-sm text-primary-foreground uppercase"
+        >
+          Back to base
+        </Link>
       </div>
     </div>
   );
@@ -43,26 +43,25 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-background px-4">
-      <div className="max-w-md text-center">
-        <h1 className="text-xl font-semibold tracking-tight text-foreground">
-          This page didn't load
-        </h1>
-        <p className="mt-2 text-sm text-muted-foreground">
-          Something went wrong on our end. You can try refreshing or head back home.
+      <div className="nb-border nb-shadow-lg max-w-md bg-card p-8 text-center">
+        <p className="font-mono text-xs font-bold uppercase">Node failure</p>
+        <h1 className="mt-2 text-3xl">This page didn't load</h1>
+        <p className="mt-3 text-sm text-muted-foreground">
+          Something broke on our end. Retry or return to base.
         </p>
-        <div className="mt-6 flex flex-wrap justify-center gap-2">
+        <div className="mt-6 flex flex-wrap justify-center gap-3">
           <button
             onClick={() => {
               router.invalidate();
               reset();
             }}
-            className="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
+            className="nb-border nb-shadow-sm nb-press bg-foreground px-5 py-2.5 font-display text-sm text-background uppercase"
           >
             Try again
           </button>
           <a
             href="/"
-            className="inline-flex items-center justify-center rounded-md border border-input bg-background px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-accent"
+            className="nb-border nb-shadow-sm nb-press bg-card px-5 py-2.5 font-display text-sm uppercase"
           >
             Go home
           </a>
@@ -77,19 +76,29 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Lovable App" },
-      { name: "description", content: "Lovable Generated Project" },
-      { name: "author", content: "Lovable" },
-      { property: "og:title", content: "Lovable App" },
-      { property: "og:description", content: "Lovable Generated Project" },
+      { title: "Cyphora — Privacy-Preserving Data Sharing for Institutions" },
+      {
+        name: "description",
+        content:
+          "Cyphora lets colleges and universities collaborate on data through federated learning, differential privacy, consent management and role-based access.",
+      },
+      { name: "author", content: "Team Cyphora" },
+      { property: "og:title", content: "Cyphora — Collaborate Without Compromise" },
+      {
+        property: "og:description",
+        content:
+          "Privacy-first institutional data intelligence: federated learning, secure aggregation and tamper-proof audit trails.",
+      },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
-      { name: "twitter:site", content: "@Lovable" },
     ],
     links: [
+      { rel: "stylesheet", href: appCss },
+      { rel: "preconnect", href: "https://fonts.googleapis.com" },
+      { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
       {
         rel: "stylesheet",
-        href: appCss,
+        href: "https://fonts.googleapis.com/css2?family=Archivo+Black&family=Space+Grotesk:wght@400;500;700&family=Space+Mono:wght@400;700&display=swap",
       },
       { rel: "icon", href: "/favicon.ico", type: "image/x-icon" },
     ],
@@ -119,8 +128,11 @@ function RootComponent() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
-      <Outlet />
+      <AuthProvider>
+        {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
+        <Outlet />
+        <Toaster position="top-right" />
+      </AuthProvider>
     </QueryClientProvider>
   );
 }
